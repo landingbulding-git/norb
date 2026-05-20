@@ -68,7 +68,7 @@ export default function MessageForm() {
           transition={{ duration: 0.3 }}
           className="space-y-4 w-full"
           >            <form onSubmit={handleMessageSubmit} className="relative w-full">
-              <div className="relative flex w-full flex-col md:flex-row items-stretch gap-2 bg-zinc-900 border border-zinc-800 rounded-xl p-2 focus-within:border-orange-600 focus-within:ring-1 focus-within:ring-orange-600 transition-all">
+              <div className="relative flex w-full flex-col md:flex-row items-center gap-2 bg-zinc-900 border border-zinc-800 rounded-xl p-2 focus-within:border-orange-600 focus-within:ring-1 focus-within:ring-orange-600 transition-all">
                 <input
                   id="message-input"
                   type="text"
@@ -80,10 +80,10 @@ export default function MessageForm() {
                 <button
                   id="message-send-btn"
                   type="submit"
-                  className="flex items-center justify-center gap-2 bg-orange-600 hover:bg-orange-500 active:bg-orange-700 text-white font-medium text-sm px-6 py-2.5 rounded-lg transition-all shadow-md active:scale-95 shrink-0"
+                  className="flex items-center justify-center bg-orange-600 hover:bg-orange-500 active:bg-orange-700 text-white rounded-full transition-all shadow-md active:scale-95 shrink-0 w-12 h-12 md:w-14 md:h-14"
+                  aria-label="Send message"
                 >
-                  <span>Send</span>
-                  <Send className="w-4 h-4" />
+                  <Send className="w-5 h-5 md:w-6 md:h-6" />
                 </button>
               </div>
               {errorStatus && (

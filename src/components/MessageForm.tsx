@@ -76,7 +76,7 @@ export default function MessageForm() {
                   placeholder="Drop a note about an idea, project, or just say hi..."
                   value={messageText}
                   onChange={(e) => setMessageText(e.target.value)}
-                  className="w-full bg-transparent px-4 py-3 text-zinc-100 placeholder-zinc-500 focus:outline-none text-sm md:text-base selection:bg-orange-600/30"
+                  className="w-full bg-transparent px-4 py-5 md:py-6 text-zinc-100 placeholder-zinc-500 focus:outline-none text-sm md:text-base selection:bg-orange-600/30"
                 />
                 <button
                   id="message-send-btn"

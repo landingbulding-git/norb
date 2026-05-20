@@ -1,6 +1,6 @@
 import { useState, FormEvent } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { Send, User, Mail, ArrowRight, CheckCircle2, RotateCcw } from 'lucide-react';
+import { Send, User, Mail, ArrowRight, CheckCircle2, RotateCcw, Loader2 } from 'lucide-react';
 import { UserMessage } from '../types.ts';
 
 export default function MessageForm() {
@@ -9,6 +9,7 @@ export default function MessageForm() {
   const [firstName, setFirstName] = useState('');
   const [email, setEmail] = useState('');
   const [errorStatus, setErrorStatus] = useState<string | null>(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handleMessageSubmit = (e: FormEvent) => {
     e.preventDefault();
@@ -20,7 +21,7 @@ export default function MessageForm() {
     setStep('details');
   };
 
-  const handleDetailsSubmit = (e: FormEvent) => {
+  const handleDetailsSubmit = async (e: FormEvent) => {
     e.preventDefault();
     if (!firstName.trim()) {
       setErrorStatus('Please enter your first name.');
@@ -31,21 +32,48 @@ export default function MessageForm() {
       return;
     }
 
-    const newMessage: UserMessage = {
-      id: crypto.randomUUID ? crypto.randomUUID() : Math.random().toString(36).substring(2),
-      message: messageText,
-      firstName: firstName,
-      email: email,
-      createdAt: new Date().toISOString(),
-    };
-
-    // Store in localStorage for the offline persistence expectation
-    const existingRaw = localStorage.getItem('norb_messages');
-    const existing: UserMessage[] = existingRaw ? JSON.parse(existingRaw) : [];
-    localStorage.setItem('norb_messages', JSON.stringify([newMessage, ...existing]));
-
+    setIsSubmitting(true);
     setErrorStatus(null);
-    setStep('success');
+
+    try {
+      const response = await fetch('https://api.web3forms.com/submit', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json'
+        },
+        body: JSON.stringify({
+          access_key: '644870ab-6b5f-4ae8-a3f2-9d883c85b034',
+          name: firstName,
+          email: email,
+          message: messageText,
+        })
+      });
+
+      const result = await response.json();
+
+      if (result.success) {
+        // Keep the local storage mock just in case for UI persistence/history
+        const newMessage: UserMessage = {
+          id: crypto.randomUUID ? crypto.randomUUID() : Math.random().toString(36).substring(2),
+          message: messageText,
+          firstName: firstName,
+          email: email,
+          createdAt: new Date().toISOString(),
+        };
+        const existingRaw = localStorage.getItem('norb_messages');
+        const existing: UserMessage[] = existingRaw ? JSON.parse(existingRaw) : [];
+        localStorage.setItem('norb_messages', JSON.stringify([newMessage, ...existing]));
+
+        setStep('success');
+      } else {
+        setErrorStatus(result.message || 'Something went wrong. Please try again.');
+      }
+    } catch (error) {
+      setErrorStatus('Network error. Please try again later.');
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const handleReset = () => {
@@ -171,10 +199,20 @@ export default function MessageForm() {
               <button
                 id="details-submit-btn"
                 type="submit"
-                className="w-full flex items-center justify-center gap-2 bg-orange-600 hover:bg-orange-500 active:bg-orange-700 text-white font-medium text-sm py-2.5 rounded-lg transition-all focus:outline-none focus:ring-2 focus:ring-orange-600 focus:ring-offset-2 focus:ring-offset-zinc-950 shadow-md active:scale-98"
+                disabled={isSubmitting}
+                className="w-full flex items-center justify-center gap-2 bg-orange-600 hover:bg-orange-500 active:bg-orange-700 disabled:bg-orange-600/50 disabled:cursor-not-allowed text-white font-medium text-sm py-2.5 rounded-lg transition-all focus:outline-none focus:ring-2 focus:ring-orange-600 focus:ring-offset-2 focus:ring-offset-zinc-950 shadow-md active:scale-98"
               >
-                <span>Submit message</span>
-                <ArrowRight className="w-4 h-4" />
+                {isSubmitting ? (
+                  <>
+                    <Loader2 className="w-4 h-4 animate-spin" />
+                    <span>Sending...</span>
+                  </>
+                ) : (
+                  <>
+                    <span>Submit message</span>
+                    <ArrowRight className="w-4 h-4" />
+                  </>
+                )}
               </button>
             </form>
           </motion.div>

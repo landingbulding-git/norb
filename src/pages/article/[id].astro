@@ -1,7 +1,6 @@
 ---
 import Layout from '@/src/layouts/Layout.astro';
 import { ArrowLeft } from 'lucide-react';
-import { getPermanentUrl } from '@/src/lib/blob';
 import CodeBlock from '@/src/components/CodeBlock';
 
 export async function getStaticPaths() {
@@ -33,29 +32,19 @@ export async function getStaticPaths() {
   
   if (!data.results) return [];
 
-  return Promise.all(data.results.map(async (page: any) => {
+  return data.results.map((page: any) => {
     const titleProp = Object.values(page.properties).find((p: any) => p.type === 'title') as any;
     const title = titleProp?.title?.[0]?.plain_text || 'Untitled';
 
-    const coverProp = page.properties.cover;
-    let coverUrl = null;
-    if (coverProp?.type === 'files' && coverProp.files.length > 0) {
-      const file = coverProp.files[0];
-      coverUrl = file.type === 'external' ? file.external.url : file.file.url;
-    } else if (page.cover) {
-      coverUrl = page.cover.type === 'external' ? page.cover.external.url : page.cover.file.url;
-    }
-
-    // Convert to permanent URL
-    const permanentCoverUrl = await getPermanentUrl(coverUrl, page.id);
+    const coverUrl = page.properties.cover?.url || null;
 
     const created = page.properties.created?.created_time || page.created_time;
 
     return {
       params: { id: page.id },
-      props: { title, coverUrl: permanentCoverUrl, created }
+      props: { title, coverUrl, created }
     };
-  }));
+  });
 }
 
 const { id } = Astro.params;
@@ -73,25 +62,7 @@ try {
   });
   const blocksData = await blocksRes.json();
   if (blocksData.results) {
-    const processedBlocks = [];
-    for (const block of blocksData.results) {
-      if (block.type === 'image') {
-        const imageUrl = block.image.type === 'external' ? block.image.external.url : block.image.file.url;
-        const permanentUrl = await getPermanentUrl(imageUrl, `${id}-block-${block.id}`);
-        
-        // Update the block with the permanent URL
-        if (block.image.type === 'external') {
-          block.image.external.url = permanentUrl;
-        } else {
-          // If it was 'file', we convert it to 'external' to use our permanent URL
-          block.image.type = 'external';
-          block.image.external = { url: permanentUrl };
-          delete block.image.file;
-        }
-      }
-      processedBlocks.push(block);
-    }
-    blocks = processedBlocks;
+    blocks = blocksData.results;
   }
 } catch (error) {
   console.error("Error fetching Notion blocks:", error);

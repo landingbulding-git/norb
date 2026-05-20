@@ -5,7 +5,6 @@ import ProjectShowcase from '@/src/components/ProjectShowcase';
 import { ArrowUpRight } from 'lucide-react';
 import { socialLinks } from '@/src/data';
 import type { Article } from '@/src/types';
-import { getPermanentUrl } from '@/src/lib/blob';
 
 // Fetch Notion Data
 const NOTION_API_KEY = import.meta.env.NOTION_API_KEY || process.env.NOTION_API_KEY;
@@ -34,23 +33,13 @@ try {
   const data = await response.json();
 
   if (data.results) {
-    articles = await Promise.all(data.results.map(async (page: any) => {
+    articles = data.results.map((page: any) => {
       // Extract title
       const titleProp = Object.values(page.properties).find((p: any) => p.type === 'title') as any;
       const title = titleProp?.title?.[0]?.plain_text || 'Untitled';
 
-      // Extract cover
-      const coverProp = page.properties.cover;
-      let coverUrl = null;
-      if (coverProp?.type === 'files' && coverProp.files.length > 0) {
-        const file = coverProp.files[0];
-        coverUrl = file.type === 'external' ? file.external.url : file.file.url;
-      } else if (page.cover) {
-        coverUrl = page.cover.type === 'external' ? page.cover.external.url : page.cover.file.url;
-      }
-
-      // Convert to permanent URL if needed
-      const permanentCoverUrl = await getPermanentUrl(coverUrl, page.id);
+      // Extract cover (Assuming the property is named 'cover' and is of type 'url')
+      const coverUrl = page.properties.cover?.url || null;
 
       // Extract status
       const status = page.properties.status?.select?.name || 'in hold';
@@ -62,10 +51,10 @@ try {
         id: page.id,
         title,
         status,
-        cover: permanentCoverUrl,
+        cover: coverUrl,
         created
       };
-    }));
+    });
 
     // Sort them by status: "pinned" first, then "ongoing" then "ended" then "in hold"
     const statusOrder: Record<string, number> = {

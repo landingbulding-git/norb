@@ -94,7 +94,14 @@ function renderRichText(richTextArray: any[]) {
     <article class="space-y-8">
       {coverUrl && (
         <div class="w-full h-64 md:h-96 rounded-2xl overflow-hidden border border-zinc-800 shadow-2xl">
-          <img src={coverUrl} alt={title} class="w-full h-full object-cover" />
+          <img 
+            src={coverUrl} 
+            alt={title} 
+            loading="eager"
+            fetchpriority="high"
+            decoding="async"
+            class="w-full h-full object-cover" 
+          />
         </div>
       )}
 
@@ -132,12 +139,12 @@ function renderRichText(richTextArray: any[]) {
           }
           if (block.type === 'code') {
             return (
-              <CodeBlock client:load code={block.code.rich_text[0]?.plain_text || ''} />
+              <CodeBlock client:visible code={block.code.rich_text[0]?.plain_text || ''} />
             );
           }
           if (block.type === 'image') {
             const imageUrl = block.image.type === 'external' ? block.image.external.url : block.image.file.url;
-            return <img src={imageUrl} alt="Article image" class="rounded-xl border border-zinc-800 my-8 w-full shadow-lg" />;
+            return <img src={imageUrl} alt="Article image" loading="lazy" decoding="async" class="rounded-xl border border-zinc-800 my-8 w-full shadow-lg" />;
           }
           // Fallback or ignored block types
           return null;

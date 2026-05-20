@@ -124,6 +124,11 @@ try {
                 id="hero-avatar"
                 src="/me-landing-image.webp"
                 alt="Norb"
+                width="112"
+                height="112"
+                loading="eager"
+                fetchpriority="high"
+                decoding="async"
                 referrerPolicy="no-referrer"
                 class="w-full h-full object-cover transition-all duration-500"
               />
@@ -135,13 +140,13 @@ try {
 
       <!-- Interactive Contact / Message form - HIGHLIGHT of the personal touch -->
       <div class="pt-4 border-t border-zinc-900/10">
-        <MessageForm client:load />
+        <MessageForm client:visible />
       </div>
     </section>
 
     <!-- WORK / CURRENT POT STUFF -->
     <section id="work-section">
-      <ProjectShowcase articles={articles} client:load />
+      <ProjectShowcase articles={articles} client:visible />
     </section>
 
     <!-- CREDENTIALS / METRICS MINI LOGO BOARD -->

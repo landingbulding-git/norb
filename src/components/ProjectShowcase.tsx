@@ -59,6 +59,8 @@ export default function ProjectShowcase({ articles }: ProjectShowcaseProps) {
                 <img 
                   src={article.cover} 
                   alt={article.title} 
+                  loading="lazy"
+                  decoding="async"
                   className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
                 />
               ) : (

@@ -1,6 +1,7 @@
 ---
 import Layout from '@/src/layouts/Layout.astro';
 import { ArrowLeft } from 'lucide-react';
+import { getPermanentUrl } from '@/src/lib/blob';
 
 export async function getStaticPaths() {
   const NOTION_API_KEY = import.meta.env.NOTION_API_KEY || process.env.NOTION_API_KEY;
@@ -31,7 +32,7 @@ export async function getStaticPaths() {
   
   if (!data.results) return [];
 
-  return data.results.map((page: any) => {
+  return Promise.all(data.results.map(async (page: any) => {
     const titleProp = Object.values(page.properties).find((p: any) => p.type === 'title') as any;
     const title = titleProp?.title?.[0]?.plain_text || 'Untitled';
 
@@ -44,13 +45,16 @@ export async function getStaticPaths() {
       coverUrl = page.cover.type === 'external' ? page.cover.external.url : page.cover.file.url;
     }
 
+    // Convert to permanent URL
+    const permanentCoverUrl = await getPermanentUrl(coverUrl, page.id);
+
     const created = page.properties.created?.created_time || page.created_time;
 
     return {
       params: { id: page.id },
-      props: { title, coverUrl, created }
+      props: { title, coverUrl: permanentCoverUrl, created }
     };
-  });
+  }));
 }
 
 const { id } = Astro.params;
@@ -68,7 +72,23 @@ try {
   });
   const blocksData = await blocksRes.json();
   if (blocksData.results) {
-    blocks = blocksData.results;
+    blocks = await Promise.all(blocksData.results.map(async (block: any) => {
+      if (block.type === 'image') {
+        const imageUrl = block.image.type === 'external' ? block.image.external.url : block.image.file.url;
+        const permanentUrl = await getPermanentUrl(imageUrl, `${id}-block-${block.id}`);
+        
+        // Update the block with the permanent URL
+        if (block.image.type === 'external') {
+          block.image.external.url = permanentUrl;
+        } else {
+          // If it was 'file', we convert it to 'external' to use our permanent URL
+          block.image.type = 'external';
+          block.image.external = { url: permanentUrl };
+          delete block.image.file;
+        }
+      }
+      return block;
+    }));
   }
 } catch (error) {
   console.error("Error fetching Notion blocks:", error);

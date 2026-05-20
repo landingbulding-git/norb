@@ -1,8 +1,41 @@
-import { Project } from '../types.ts';
-import { projects } from '../data.ts';
-import { Flame, Compass, Sparkles, Plus, ExternalLink } from 'lucide-react';
+import { Article } from '../types.ts';
+import { Flame, Compass, Sparkles, Plus, ExternalLink, Pin, Circle, CheckCircle, PauseCircle } from 'lucide-react';
 
-export default function ProjectShowcase() {
+interface ProjectShowcaseProps {
+  articles: Article[];
+}
+
+export default function ProjectShowcase({ articles }: ProjectShowcaseProps) {
+  const getStatusIcon = (status: string) => {
+    switch (status) {
+      case 'pinned':
+        return <Pin className="w-2.5 h-2.5" />;
+      case 'ongoing':
+        return <Flame className="w-2.5 h-2.5 animate-pulse" />;
+      case 'ended':
+        return <CheckCircle className="w-2.5 h-2.5" />;
+      case 'in hold':
+        return <PauseCircle className="w-2.5 h-2.5" />;
+      default:
+        return <Circle className="w-2.5 h-2.5" />;
+    }
+  };
+
+  const getStatusClasses = (status: string) => {
+    switch (status) {
+      case 'pinned':
+        return 'bg-orange-500/10 text-orange-400 border border-orange-500/20';
+      case 'ongoing':
+        return 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20';
+      case 'ended':
+        return 'bg-blue-500/10 text-blue-400 border border-blue-500/20';
+      case 'in hold':
+        return 'bg-zinc-500/10 text-zinc-400 border border-zinc-500/20';
+      default:
+        return 'bg-zinc-500/10 text-zinc-400 border border-zinc-500/20';
+    }
+  };
+
   return (
     <div id="projects-showcase-container" className="space-y-8">
       <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-3 border-b border-zinc-800 pb-4">
@@ -14,63 +47,57 @@ export default function ProjectShowcase() {
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
-        {projects.map((project) => (
+        {articles.map((article) => (
           <div
-            key={project.id}
-            className="group relative bg-zinc-950 border border-zinc-900 rounded-xl p-5 hover:border-orange-600/30 transition-all duration-300 md:hover:-translate-y-1 hover:shadow-2xl hover:shadow-orange-900/5 flex flex-col justify-between"
+            key={article.id}
+            className="group relative bg-zinc-950 border border-zinc-900 rounded-xl overflow-hidden hover:border-orange-600/30 transition-all duration-300 md:hover:-translate-y-1 hover:shadow-2xl hover:shadow-orange-900/5 flex flex-col"
           >
-            {/* Top Bar inside Card */}
-            <div>
-              <div className="flex justify-between items-center mb-4">
-                {/* Tech tag or project category */}
-                <div className="flex items-center gap-1.5 font-mono text-[10px] text-zinc-500">
-                  <span className="w-1.5 h-1.5 rounded-full bg-zinc-700 group-hover:bg-orange-500 transition-colors"></span>
-                  <span>{project.tech[0]}</span>
+            {/* Image Cover */}
+            <div className="w-full h-36 bg-zinc-900/50 border-b border-zinc-900 overflow-hidden relative flex-shrink-0">
+              {article.cover ? (
+                <img 
+                  src={article.cover} 
+                  alt={article.title} 
+                  className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+                />
+              ) : (
+                <div className="w-full h-full flex items-center justify-center text-zinc-800 bg-zinc-900/20">
+                  <span className="font-mono text-xs font-semibold uppercase tracking-widest">{article.title.substring(0, 2)}</span>
                 </div>
-
-                {/* Flame / Compass / Sparkle indicators based on boiling level */}
-                <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded text-[10px] font-medium font-mono ${
-                  project.status === 'Baked' 
-                    ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-505/20' 
-                    : project.status === 'Boiling'
-                    ? 'bg-orange-500/10 text-orange-400 border border-orange-500/20'
-                    : 'bg-amber-500/10 text-amber-500 border border-amber-500/20'
-                }`}>
-                  {project.status === 'Baked' && <Sparkles className="w-2.5 h-2.5" />}
-                  {project.status === 'Boiling' && <Flame className="w-2.5 h-2.5 animate-pulse" />}
-                  {project.status === 'Simmering' && <Compass className="w-2.5 h-2.5" />}
-                  <span>{project.statusLabel}</span>
+              )}
+              {/* Floating Status Badge */}
+              <div className="absolute top-3 right-3 z-10">
+                <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded backdrop-blur-md text-[10px] font-medium font-mono shadow-sm ${getStatusClasses(article.status)}`}>
+                  {getStatusIcon(article.status)}
+                  <span className="capitalize">{article.status}</span>
                 </span>
               </div>
-
-              {/* Title & Desc */}
-              <h3 className="text-lg font-display text-zinc-100 font-bold group-hover:text-orange-500 transition-colors flex items-center gap-1">
-                <span>{project.title}</span>
-                {project.link !== '#' && (
-                  <ExternalLink className="w-3.5 h-3.5 text-zinc-600 group-hover:text-orange-400 transition-colors" />
-                )}
-              </h3>
-              
-              <p className="text-sm text-zinc-400 mt-2.5 font-sans leading-relaxed">
-                {project.description}
-              </p>
             </div>
 
-            {/* Tech tags and footer */}
-            <div className="mt-6 pt-4 border-t border-zinc-900/60">
-              <div className="flex flex-wrap gap-1.5">
-                {project.tech.map((t) => (
-                  <span
-                    key={t}
-                    className="text-[9px] font-mono text-zinc-600 bg-zinc-900/40 px-1.5 py-0.5 rounded border border-zinc-800/10 group-hover:border-zinc-800/60 group-hover:text-zinc-500 transition-colors"
-                  >
-                    {t}
-                  </span>
-                ))}
+            {/* Content inside Card */}
+            <div className="p-5 flex flex-col flex-grow justify-between">
+              <div>
+                {/* Title */}
+                <h3 className="text-base font-display text-zinc-100 font-bold group-hover:text-orange-500 transition-colors flex items-center gap-1">
+                  <span className="line-clamp-2">{article.title}</span>
+                </h3>
+              </div>
+              
+              {/* Footer */}
+              <div className="mt-4 pt-3 border-t border-zinc-900/60 flex justify-between items-center text-zinc-600 text-[10px] font-mono">
+                <span>{new Date(article.created).toLocaleDateString()}</span>
+                <span className="opacity-0 group-hover:opacity-100 transition-opacity flex items-center gap-1 text-orange-500">
+                  Read <ExternalLink className="w-3 h-3" />
+                </span>
               </div>
             </div>
           </div>
         ))}
+        {articles.length === 0 && (
+          <div className="col-span-full py-10 text-center text-zinc-500 text-sm font-mono border border-dashed border-zinc-800 rounded-xl">
+            No projects in the kitchen yet.
+          </div>
+        )}
       </div>
     </div>
   );

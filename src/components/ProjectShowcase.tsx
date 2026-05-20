@@ -7,16 +7,10 @@ export default function ProjectShowcase() {
     <div id="projects-showcase-container" className="space-y-8">
       <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-3 border-b border-zinc-800 pb-4">
         <div>
-          <span className="text-[10px] sm:text-xs font-mono text-orange-500 uppercase tracking-widest block mb-1">
-            🍳 Current Stove Status
-          </span>
           <h2 className="text-xl sm:text-2xl font-display font-semibold text-zinc-100">
             What's Cooking
           </h2>
         </div>
-        <p className="text-xs sm:text-sm text-zinc-500 font-sans max-w-sm md:text-right">
-          A tidy list of experiments, side ventures, and actual utilities currently boiling on the stove.
-        </p>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-5">

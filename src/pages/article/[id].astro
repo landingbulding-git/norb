@@ -33,8 +33,7 @@ export async function getStaticPaths() {
   
   if (!data.results) return [];
 
-  const paths = [];
-  for (const page of data.results) {
+  return Promise.all(data.results.map(async (page: any) => {
     const titleProp = Object.values(page.properties).find((p: any) => p.type === 'title') as any;
     const title = titleProp?.title?.[0]?.plain_text || 'Untitled';
 
@@ -52,13 +51,11 @@ export async function getStaticPaths() {
 
     const created = page.properties.created?.created_time || page.created_time;
 
-    paths.push({
+    return {
       params: { id: page.id },
       props: { title, coverUrl: permanentCoverUrl, created }
-    });
-  }
-
-  return paths;
+    };
+  }));
 }
 
 const { id } = Astro.params;

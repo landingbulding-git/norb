@@ -57,18 +57,17 @@ export default function MessageForm() {
   };
 
   return (
-    <div id="contact-form-container" className="w-full max-w-xl mx-auto">
+    <div id="contact-form-container" className="w-full">
       <AnimatePresence mode="wait">
         {step === 'message' && (
           <motion.div
-            key="message-step"
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -10 }}
-            transition={{ duration: 0.3 }}
-            className="space-y-4"
-          >
-            <form onSubmit={handleMessageSubmit} className="relative w-full">
+          key="message-step"
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          exit={{ opacity: 0, y: -10 }}
+          transition={{ duration: 0.3 }}
+          className="space-y-4 w-full"
+          >            <form onSubmit={handleMessageSubmit} className="relative w-full">
               <div className="relative flex w-full flex-col md:flex-row items-stretch gap-2 bg-zinc-900 border border-zinc-800 rounded-xl p-2 focus-within:border-orange-600 focus-within:ring-1 focus-within:ring-orange-600 transition-all">
                 <input
                   id="message-input"

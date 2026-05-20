@@ -12,5 +12,12 @@ export default defineConfig({
         '@': '.',
       },
     },
+    build: {
+      // Inline CSS below 15kb to prevent render-blocking requests
+      assetsInlineLimit: 15360,
+    }
   },
+  image: {
+    domains: ['ke0c0udeqzgh4whn.public.blob.vercel-storage.com', 'prod-files-secure.s3.us-west-2.amazonaws.com'],
+  }
 });

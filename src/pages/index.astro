@@ -5,6 +5,8 @@ import ProjectShowcase from '@/src/components/ProjectShowcase';
 import { ArrowUpRight } from 'lucide-react';
 import { socialLinks } from '@/src/data';
 import type { Article } from '@/src/types';
+import { Image } from 'astro:assets';
+import myAvatar from '@/src/me-landing-image.webp';
 
 // Fetch Notion Data
 const NOTION_API_KEY = import.meta.env.NOTION_API_KEY || process.env.NOTION_API_KEY;
@@ -120,16 +122,15 @@ try {
             <!-- Visual Glow Effect -->
             <div class="absolute -inset-1 rounded-full bg-gradient-to-r from-orange-600 to-amber-600 blur opacity-45 group-hover:opacity-100 transition duration-1000 group-hover:duration-200"></div>
             <div class="relative w-24 h-24 sm:w-28 sm:h-28 rounded-full overflow-hidden border border-zinc-800">
-              <img
+              <Image
                 id="hero-avatar"
-                src="/me-landing-image.webp"
+                src={myAvatar}
                 alt="Norb"
-                width="112"
-                height="112"
+                width={112}
+                height={112}
                 loading="eager"
                 fetchpriority="high"
                 decoding="async"
-                referrerPolicy="no-referrer"
                 class="w-full h-full object-cover transition-all duration-500"
               />
             </div>

@@ -95,27 +95,43 @@ export default function MessageForm() {
           exit={{ opacity: 0, y: -10 }}
           transition={{ duration: 0.3 }}
           className="space-y-4 w-full"
-          >            <form onSubmit={handleMessageSubmit} className="relative w-full">
-              <div className="relative flex w-full flex-col md:flex-row items-center gap-2 bg-zinc-900 border border-zinc-800 rounded-xl p-2 focus-within:border-orange-600 focus-within:ring-1 focus-within:ring-orange-600 transition-all">
-                <input
+          >            <form onSubmit={handleMessageSubmit} className="relative w-full group">
+              <div className="relative flex w-full flex-col items-center bg-zinc-950 border border-zinc-800/80 rounded-2xl p-1.5 focus-within:border-zinc-700 focus-within:ring-1 focus-within:ring-zinc-700/50 transition-all shadow-2xl">
+                <textarea
                   id="message-input"
-                  type="text"
+                  rows={1}
                   placeholder="Drop a note about an idea, project, or just say hi..."
                   value={messageText}
-                  onChange={(e) => setMessageText(e.target.value)}
-                  className="w-full bg-transparent px-4 py-5 md:py-6 text-zinc-100 placeholder-zinc-500 focus:outline-none text-sm md:text-base selection:bg-orange-600/30"
+                  onChange={(e) => {
+                    setMessageText(e.target.value);
+                    e.target.style.height = 'auto';
+                    e.target.style.height = e.target.scrollHeight + 'px';
+                  }}
+                  className="w-full bg-transparent px-4 py-4 text-zinc-100 placeholder-zinc-600 focus:outline-none text-sm md:text-base selection:bg-orange-600/30 resize-none min-h-[56px] max-h-[200px]"
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter' && !e.shiftKey) {
+                      e.preventDefault();
+                      handleMessageSubmit(e);
+                    }
+                  }}
                 />
-                <button
-                  id="message-send-btn"
-                  type="submit"
-                  className="flex items-center justify-center bg-orange-600 hover:bg-orange-500 active:bg-orange-700 text-white rounded-full transition-all shadow-md active:scale-95 shrink-0 w-12 h-12 md:w-14 md:h-14"
-                  aria-label="Send message"
-                >
-                  <Send className="w-5 h-5 md:w-6 md:h-6" />
-                </button>
+                <div className="w-full flex justify-between items-center px-2 py-1.5 border-t border-zinc-900/50 mt-1">
+                  <div className="flex items-center gap-1.5 px-2">
+                    <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+                    <span className="text-[10px] font-mono text-zinc-500 uppercase tracking-wider">Available for work</span>
+                  </div>
+                  <button
+                    id="message-send-btn"
+                    type="submit"
+                    className="flex items-center gap-2 bg-zinc-100 hover:bg-white active:scale-[0.98] text-zinc-950 px-4 py-2 rounded-xl transition-all font-medium text-xs md:text-sm group/btn shadow-lg"
+                  >
+                    <span>Continue</span>
+                    <ArrowRight className="w-3.5 h-3.5 group-hover/btn:translate-x-0.5 transition-transform" />
+                  </button>
+                </div>
               </div>
               {errorStatus && (
-                <p id="msg-err" className="text-orange-500 text-xs mt-2 pl-2">
+                <p id="msg-err" className="text-orange-500 text-[10px] mt-2 pl-4 font-mono">
                   {errorStatus}
                 </p>
               )}

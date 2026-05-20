@@ -2,6 +2,7 @@
 import Layout from '@/src/layouts/Layout.astro';
 import { ArrowLeft } from 'lucide-react';
 import { getPermanentUrl } from '@/src/lib/blob';
+import CodeBlock from '@/src/components/CodeBlock';
 
 export async function getStaticPaths() {
   const NOTION_API_KEY = import.meta.env.NOTION_API_KEY || process.env.NOTION_API_KEY;
@@ -158,9 +159,7 @@ function renderRichText(richTextArray: any[]) {
           }
           if (block.type === 'code') {
             return (
-              <pre class="bg-zinc-900 border border-zinc-800 p-4 rounded-xl overflow-x-auto text-sm text-zinc-300 my-6">
-                <code>{block.code.rich_text[0]?.plain_text}</code>
-              </pre>
+              <CodeBlock client:load code={block.code.rich_text[0]?.plain_text || ''} />
             );
           }
           if (block.type === 'image') {

@@ -80,7 +80,7 @@ export default function ProjectShowcase({ articles }: ProjectShowcaseProps) {
               <div>
                 {/* Title */}
                 <h3 className="text-base font-display text-zinc-100 font-bold group-hover:text-orange-500 transition-colors flex items-center gap-1">
-                  <span className="line-clamp-2">{article.title}</span>
+                  <span>{article.title}</span>
                 </h3>
               </div>
               

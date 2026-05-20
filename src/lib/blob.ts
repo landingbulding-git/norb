@@ -1,4 +1,5 @@
 import { put } from "@vercel/blob";
+import sharp from "sharp";
 
 /**
  * Checks if a URL is a temporary Notion-hosted URL.
@@ -10,6 +11,7 @@ export function isNotionUrl(url: string | null): boolean {
 
 /**
  * Uploads an image to Vercel Blob if it's a Notion URL.
+ * Converts it to an optimized WebP format before uploading.
  * Returns the permanent URL.
  */
 export async function getPermanentUrl(url: string | null, key: string): Promise<string | null> {
@@ -25,15 +27,19 @@ export async function getPermanentUrl(url: string | null, key: string): Promise<
       return url;
     }
 
-    const contentType = response.headers.get("content-type") || "image/jpeg";
-    const extension = contentType.split("/")[1] || "jpg";
-    const blob = await response.blob();
+    const arrayBuffer = await response.arrayBuffer();
+    const buffer = Buffer.from(arrayBuffer);
+
+    // Convert to optimized WebP using sharp
+    const webpBuffer = await sharp(buffer)
+      .webp({ quality: 80, effort: 4 }) // 80% quality, slightly higher compression effort
+      .toBuffer();
 
     // Upload to Vercel Blob
     // We use addRandomSuffix: false to avoid accumulating blobs if we re-upload the same key
-    const { url: permanentUrl } = await put(`articles/${key}.${extension}`, blob, {
+    const { url: permanentUrl } = await put(`articles/${key}.webp`, webpBuffer, {
       access: 'public',
-      contentType,
+      contentType: 'image/webp',
       addRandomSuffix: false,
     });
 

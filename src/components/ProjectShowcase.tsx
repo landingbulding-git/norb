@@ -41,7 +41,7 @@ export default function ProjectShowcase({ articles }: ProjectShowcaseProps) {
       <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-3 border-b border-zinc-800 pb-4">
         <div>
           <h2 className="text-xl sm:text-2xl font-display font-semibold text-zinc-100">
-            What's Cooking
+            things I'm hacking on...
           </h2>
         </div>
       </div>

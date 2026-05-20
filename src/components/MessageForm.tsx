@@ -164,11 +164,6 @@ export default function MessageForm() {
               </button>
             </div>
 
-            <div className="bg-zinc-950 p-3 rounded-lg border border-zinc-800/60">
-              <span className="text-[10px] text-zinc-500 font-mono block mb-1">Your draft message:</span>
-              <p className="text-zinc-300 text-xs italic line-clamp-2">" {messageText} "</p>
-            </div>
-
             <form onSubmit={handleDetailsSubmit} className="space-y-4">
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div className="space-y-1">

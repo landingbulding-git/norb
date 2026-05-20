@@ -48,9 +48,10 @@ export default function ProjectShowcase({ articles }: ProjectShowcaseProps) {
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
         {articles.map((article) => (
-          <div
+          <a
             key={article.id}
-            className="group relative bg-zinc-950 border border-zinc-900 rounded-xl overflow-hidden hover:border-orange-600/30 transition-all duration-300 md:hover:-translate-y-1 hover:shadow-2xl hover:shadow-orange-900/5 flex flex-col"
+            href={`/article/${article.id}`}
+            className="group relative bg-zinc-950 border border-zinc-900 rounded-xl overflow-hidden hover:border-orange-600/30 transition-all duration-300 md:hover:-translate-y-1 hover:shadow-2xl hover:shadow-orange-900/5 flex flex-col cursor-pointer block"
           >
             {/* Image Cover */}
             <div className="w-full h-36 bg-zinc-900/50 border-b border-zinc-900 overflow-hidden relative flex-shrink-0">
@@ -91,7 +92,7 @@ export default function ProjectShowcase({ articles }: ProjectShowcaseProps) {
                 </span>
               </div>
             </div>
-          </div>
+          </a>
         ))}
         {articles.length === 0 && (
           <div className="col-span-full py-10 text-center text-zinc-500 text-sm font-mono border border-dashed border-zinc-800 rounded-xl">

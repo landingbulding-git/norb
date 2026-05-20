@@ -1,0 +1,6 @@
+{
+  "name": "Norb Personal Site",
+  "description": "Norbert's personal site - clean, minimal, modern, and interactive.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

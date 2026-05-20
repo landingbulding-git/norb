@@ -1,0 +1,93 @@
+---
+import Layout from '@/src/layouts/Layout.astro';
+import MessageForm from '@/src/components/MessageForm';
+import ProjectShowcase from '@/src/components/ProjectShowcase';
+import { ArrowUpRight } from 'lucide-react';
+import { socialLinks } from '@/src/data';
+---
+
+<Layout title="Norb.dev | Building Things">
+  <main class="max-w-4xl mx-auto px-6 py-12 md:py-20 space-y-24 relative z-10">
+    
+    <!-- HERO SECTION -->
+    <section id="hero-section" class="space-y-8">
+      <div class="flex flex-col-reverse md:flex-row md:items-center justify-between gap-8 md:gap-12">
+        
+        <div class="space-y-6 max-w-xl">
+          <!-- Title & wave -->
+          <div class="space-y-2">
+            <h1 class="text-4xl sm:text-5xl md:text-6xl font-display font-bold text-white tracking-tight leading-none">
+              Hi, I'm Norb! <span class="inline-block origin-[70%_70%] animate-[wave_2.5s_infinite] text-4xl sm:text-5xl md:text-5xl">👋</span>
+            </h1>
+            
+            <p class="text-xl sm:text-2xl text-zinc-400 font-light leading-relaxed">
+              I build things. See what's cooking and please say hi if something clicks.
+            </p>
+          </div>
+
+          <!-- Status Labels -->
+          <div class="flex flex-wrap items-center gap-2 pt-2">
+            <span class="inline-flex items-center gap-1.5 px-3 py-1 bg-zinc-900/60 text-zinc-400 border border-zinc-800/80 rounded-full text-xs font-mono">
+              <span class="w-1.5 h-1.5 rounded-full bg-orange-500 animate-ping"></span>
+              open to collab
+            </span>
+            <span class="inline-flex items-center gap-1.5 px-3 py-1 bg-zinc-900/60 text-zinc-400 border border-zinc-800/80 rounded-full text-xs font-mono">
+              <span>🍃</span>
+              no pressure
+            </span>
+            <span class="inline-flex items-center gap-1.5 px-3 py-1 bg-zinc-900/60 text-orange-500/90 border border-orange-500/10 rounded-full text-xs font-mono">
+              <span>🏆</span>
+              I love winners
+            </span>
+          </div>
+        </div>
+
+        <!-- Avatar Rounded Floating Image -->
+        <div class="flex-shrink-0 flex md:block justify-start">
+          <div class="relative animate-float">
+            <!-- Visual Glow Effect -->
+            <div class="absolute -inset-1 rounded-full bg-gradient-to-r from-orange-600 to-amber-600 blur opacity-45 group-hover:opacity-100 transition duration-1000 group-hover:duration-200"></div>
+            <div class="relative w-24 h-24 sm:w-28 sm:h-28 rounded-full overflow-hidden border border-zinc-800">
+              <img
+                id="hero-avatar"
+                src="https://images.unsplash.com/photo-1620121692029-d088224ddc74?auto=format&fit=crop&w=256&h=256&q=80"
+                alt="Abstract orange geometry placeholder for Norb"
+                referrerPolicy="no-referrer"
+                class="w-full h-full object-cover grayscale brightness-95 contrast-105 hover:grayscale-0 transition-all duration-500"
+              />
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Interactive Contact / Message form - HIGHLIGHT of the personal touch -->
+      <div class="pt-4 border-t border-zinc-900/10">
+        <MessageForm client:load />
+      </div>
+    </section>
+
+    <!-- WORK / CURRENT POT STUFF -->
+    <section id="work-section">
+      <ProjectShowcase />
+    </section>
+
+    <!-- CREDENTIALS / METRICS MINI LOGO BOARD -->
+    <section id="info-section" class="bg-zinc-950 border border-zinc-900 rounded-xl p-6 flex flex-col md:flex-row justify-between items-center gap-6">
+      <div class="space-y-1">
+        <h4 class="text-zinc-200 font-display font-medium text-sm">Want to partner up on something ambitious?</h4>
+        <p class="text-zinc-500 text-xs">Let's create something high-performance, beautiful, and completely user-centric.</p>
+      </div>
+      <div class="flex items-center gap-4">
+        <a
+          href={socialLinks.email}
+          class="text-white bg-zinc-900 hover:bg-orange-650 hover:bg-orange-600 border border-zinc-800 hover:border-orange-500 text-xs font-mono py-2 px-4 rounded-lg transition-all flex items-center gap-1.5"
+        >
+          <span>Consulting Desk</span>
+          <ArrowUpRight class="w-3.5 h-3.5" />
+        </a>
+      </div>
+    </section>
+
+  </main>
+</Layout>

@@ -33,7 +33,8 @@ export async function getStaticPaths() {
   
   if (!data.results) return [];
 
-  return Promise.all(data.results.map(async (page: any) => {
+  const paths = [];
+  for (const page of data.results) {
     const titleProp = Object.values(page.properties).find((p: any) => p.type === 'title') as any;
     const title = titleProp?.title?.[0]?.plain_text || 'Untitled';
 
@@ -51,11 +52,13 @@ export async function getStaticPaths() {
 
     const created = page.properties.created?.created_time || page.created_time;
 
-    return {
+    paths.push({
       params: { id: page.id },
       props: { title, coverUrl: permanentCoverUrl, created }
-    };
-  }));
+    });
+  }
+
+  return paths;
 }
 
 const { id } = Astro.params;
@@ -73,7 +76,8 @@ try {
   });
   const blocksData = await blocksRes.json();
   if (blocksData.results) {
-    blocks = await Promise.all(blocksData.results.map(async (block: any) => {
+    const processedBlocks = [];
+    for (const block of blocksData.results) {
       if (block.type === 'image') {
         const imageUrl = block.image.type === 'external' ? block.image.external.url : block.image.file.url;
         const permanentUrl = await getPermanentUrl(imageUrl, `${id}-block-${block.id}`);
@@ -88,8 +92,9 @@ try {
           delete block.image.file;
         }
       }
-      return block;
-    }));
+      processedBlocks.push(block);
+    }
+    blocks = processedBlocks;
   }
 } catch (error) {
   console.error("Error fetching Notion blocks:", error);

@@ -34,7 +34,9 @@ try {
   const data = await response.json();
 
   if (data.results) {
-    articles = await Promise.all(data.results.map(async (page: any) => {
+    const processedArticles: Article[] = [];
+    
+    for (const page of data.results) {
       // Extract title
       const titleProp = Object.values(page.properties).find((p: any) => p.type === 'title') as any;
       const title = titleProp?.title?.[0]?.plain_text || 'Untitled';
@@ -49,7 +51,7 @@ try {
         coverUrl = page.cover.type === 'external' ? page.cover.external.url : page.cover.file.url;
       }
 
-      // Convert to permanent URL if needed
+      // Convert to permanent URL if needed (Sequential to be safe)
       const permanentCoverUrl = await getPermanentUrl(coverUrl, page.id);
 
       // Extract status
@@ -58,14 +60,16 @@ try {
       // Extract created
       const created = page.properties.created?.created_time || page.created_time;
 
-      return {
+      processedArticles.push({
         id: page.id,
         title,
         status,
         cover: permanentCoverUrl,
         created
-      };
-    }));
+      });
+    }
+
+    articles = processedArticles;
 
     // Sort them by status: "pinned" first, then "ongoing" then "ended" then "in hold"
     const statusOrder: Record<string, number> = {

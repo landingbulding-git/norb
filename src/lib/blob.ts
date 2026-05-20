@@ -15,15 +15,19 @@ export function isNotionUrl(url: string | null): boolean {
  * Returns the permanent URL.
  */
 export async function getPermanentUrl(url: string | null, key: string): Promise<string | null> {
-  if (!url || !isNotionUrl(url)) {
+  if (!url) return null;
+  
+  if (!isNotionUrl(url)) {
     return url;
   }
+
+  console.log(`[Blob] Processing Notion image: ${key}`);
 
   try {
     // Fetch the image
     const response = await fetch(url);
     if (!response.ok) {
-      console.error(`Failed to fetch image from Notion: ${url}`);
+      console.error(`[Blob] Failed to fetch image from Notion: ${url} (Status: ${response.status})`);
       return url;
     }
 
@@ -31,21 +35,32 @@ export async function getPermanentUrl(url: string | null, key: string): Promise<
     const buffer = Buffer.from(arrayBuffer);
 
     // Convert to optimized WebP using sharp
-    const webpBuffer = await sharp(buffer)
-      .webp({ quality: 80, effort: 4 }) // 80% quality, slightly higher compression effort
-      .toBuffer();
+    let webpBuffer;
+    try {
+      webpBuffer = await sharp(buffer)
+        .webp({ quality: 80, effort: 4 })
+        .toBuffer();
+    } catch (sharpError) {
+      console.error(`[Blob] Sharp conversion failed for ${key}:`, sharpError);
+      // Fallback to original buffer if sharp fails
+      const { url: fallbackUrl } = await put(`articles/${key}.original`, buffer, {
+        access: 'public',
+        addRandomSuffix: false,
+      });
+      return fallbackUrl;
+    }
 
     // Upload to Vercel Blob
-    // We use addRandomSuffix: false to avoid accumulating blobs if we re-upload the same key
     const { url: permanentUrl } = await put(`articles/${key}.webp`, webpBuffer, {
       access: 'public',
       contentType: 'image/webp',
       addRandomSuffix: false,
     });
 
+    console.log(`[Blob] Successfully uploaded: ${permanentUrl}`);
     return permanentUrl;
   } catch (error) {
-    console.error(`Error uploading to Vercel Blob:`, error);
+    console.error(`[Blob] Error processing ${key}:`, error);
     return url;
   }
 }

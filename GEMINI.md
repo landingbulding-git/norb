@@ -1,0 +1,2 @@
+## Project Configuration
+- The user wants me to automatically stage, commit, and push changes to GitHub after editing code. I must always do this without asking for permission first, using clear and descriptive commit messages.

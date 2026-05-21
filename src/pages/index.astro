@@ -1,6 +1,7 @@
 ---
 import Layout from '@/src/layouts/Layout.astro';
 import MessageForm from '@/src/components/MessageForm';
+import LogoMarquee from '@/src/components/LogoMarquee';
 import ProjectShowcase from '@/src/components/ProjectShowcase';
 import { ArrowUpRight } from 'lucide-react';
 import { socialLinks } from '@/src/data';
@@ -143,6 +144,8 @@ try {
       <div class="pt-4 border-t border-zinc-900/10">
         <MessageForm client:visible />
       </div>
+
+      <LogoMarquee client:visible />
     </section>
 
     <!-- WORK / CURRENT POT STUFF -->

@@ -3,7 +3,7 @@ import ArticleView from '@/src/components/ArticleView.astro';
 import { fetchLiveArticles, fetchArticleBlocks } from '@/src/lib/notion';
 
 export async function getStaticPaths() {
-  const articles = await fetchLiveArticles();
+  const articles = await fetchLiveArticles('en');
 
   return articles.map((article) => ({
     params: { id: article.id },

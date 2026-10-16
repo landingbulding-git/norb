@@ -8,7 +8,9 @@
     "build": "astro build",
     "preview": "astro preview",
     "clean": "rm -rf dist server.js .astro",
-    "lint": "tsc --noEmit"
+    "lint": "tsc --noEmit",
+    "setup:notion": "tsx scripts/setup-notion-schema.ts",
+    "translate:blog": "tsx scripts/translate-blog.ts"
   },
   "dependencies": {
     "@astrojs/react": "^5.0.5",

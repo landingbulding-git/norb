@@ -13,7 +13,7 @@ const myAvatar = 'https://ke0c0udeqzgh4whn.public.blob.vercel-storage.com/main/n
 const lang = Astro.currentLocale ?? 'en';
 const articleBasePath = lang === 'hu' ? '/hu/article' : '/article';
 
-const articles = await fetchLiveArticles();
+const articles = await fetchLiveArticles(lang);
 ---
 
 <Layout title="Norb.dev | Building Things">

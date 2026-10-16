@@ -10,7 +10,7 @@ const statusOrder: Record<string, number> = {
   'in hold': 4,
 };
 
-export async function fetchLiveArticles(): Promise<Article[]> {
+export async function fetchLiveArticles(lang: string): Promise<Article[]> {
   if (!NOTION_API_KEY || !DATABASE_ID) return [];
 
   try {
@@ -23,8 +23,10 @@ export async function fetchLiveArticles(): Promise<Article[]> {
       },
       body: JSON.stringify({
         filter: {
-          property: 'stage',
-          select: { equals: 'live' }
+          and: [
+            { property: 'stage', select: { equals: 'live' } },
+            { property: 'language', select: { equals: lang } }
+          ]
         }
       })
     });

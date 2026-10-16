@@ -7,7 +7,8 @@ import { ArrowUpRight } from 'lucide-react';
 import { socialLinks } from '@/src/data';
 import type { Article } from '@/src/types';
 import { Image } from 'astro:assets';
-import myAvatar from '@/src/me-landing-image.webp';
+
+const myAvatar = 'https://ke0c0udeqzgh4whn.public.blob.vercel-storage.com/main/norb_profile.webp';
 
 // Fetch Notion Data
 const NOTION_API_KEY = import.meta.env.NOTION_API_KEY || process.env.NOTION_API_KEY;

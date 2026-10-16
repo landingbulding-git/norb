@@ -18,10 +18,17 @@ async function main() {
 
   const data = await notion(`/databases/${DATABASE_ID}/query`, {
     method: 'POST',
-    body: JSON.stringify({ filter: { property: 'autoTranslated', checkbox: { equals: false } } }),
+    body: JSON.stringify({
+      filter: {
+        and: [
+          { property: 'autoTranslated', checkbox: { equals: false } },
+          { property: 'stage', select: { equals: 'live' } },
+        ],
+      },
+    }),
   });
   const originals = data.results || [];
-  console.log(`Found ${originals.length} human-written post(s) to check.`);
+  console.log(`Found ${originals.length} live, human-written post(s) to check.`);
 
   let queued = 0;
   for (const original of originals) {

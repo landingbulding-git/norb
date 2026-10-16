@@ -9,7 +9,7 @@ This repo's blog lives in a Notion database. Translation is a 3-step pipeline th
 
 ## Steps
 
-1. **Prepare**: run `npm run translate:prepare`. It queries Notion for human-written posts (`autoTranslated` = false), skips ones with no `language` property set (warn the user which posts need tagging - nothing can infer this), skips translations that are already up to date (compares `sourceEditedTime` on the translation against the original's `last_edited_time`), and writes one JSON file per post needing translation into `.notion-translations/`.
+1. **Prepare**: run `npm run translate:prepare`. It queries Notion for human-written, **live** posts (`autoTranslated` = false, `stage` = live - dev-stage drafts are never auto-translated), skips ones with no `language` property set (warn the user which posts need tagging - nothing can infer this), skips translations that are already up to date (compares `sourceEditedTime` on the translation against the original's `last_edited_time`), and writes one JSON file per post needing translation into `.notion-translations/`.
 
    If it says "Nothing to translate," you're done - report that and stop.
 

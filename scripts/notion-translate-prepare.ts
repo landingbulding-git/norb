@@ -6,6 +6,7 @@ import {
   requireEnv, notion, DATABASE_ID, titlePropertyName, titleText,
   fetchAllBlocks, blockPlainText, stripBlockForCreate, sameInstant,
   TRANSLATABLE_BLOCK_TYPES, LANG_NAMES, OTHER_LANG, findExistingTranslation,
+  isUnsupportedBlock, reuploadImage,
 } from './notion-translate-lib.ts';
 
 requireEnv();
@@ -41,7 +42,19 @@ async function main() {
 
     const originalBlocks = await fetchAllBlocks(original.id);
     const blockTexts: string[] = [];
-    const blocks = originalBlocks.map((block: any) => {
+    const blocks = await Promise.all(originalBlocks.map(async (block: any) => {
+      if (isUnsupportedBlock(block)) {
+        // Internal (signed, short-lived) upload URL - re-upload the bytes now,
+        // while the source URL is still fresh, so the image survives into the
+        // translated page instead of being silently dropped.
+        const uploadId = await reuploadImage(block.image.file.url, `${block.id}.png`);
+        if (uploadId) {
+          return {
+            block: { type: 'image', image: { type: 'file_upload', file_upload: { id: uploadId }, caption: block.image.caption || [] } },
+            translatableIndex: null,
+          };
+        }
+      }
       const stripped = stripBlockForCreate(block);
       if (TRANSLATABLE_BLOCK_TYPES.includes(block.type)) {
         const text = blockPlainText(block);
@@ -51,7 +64,7 @@ async function main() {
         }
       }
       return { block: stripped, translatableIndex: null };
-    });
+    }));
 
     const queueItem = {
       pageId: original.id,

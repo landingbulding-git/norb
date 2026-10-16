@@ -31,7 +31,7 @@ After `apply`, you can sanity-check with a direct Notion query (see any recent c
 
 Don't try to "fix" these - they're intentional:
 - `icon: null` and overlong (>2000 char) rich_text runs are stripped/split automatically before sending to Notion.
-- Internal (signed, short-lived) image upload URLs can't be recreated, so those image blocks are silently skipped on the translated page.
+- Internal (signed, short-lived) image upload URLs can't be reused directly, so `prepare` re-downloads and re-uploads them via Notion's File Upload API right away (`reuploadImage` in the lib) and stores the resulting `file_upload` id in the queue file - this only fails (silently dropping the image, as before) if the re-upload itself errors.
 - Date comparisons use actual instants, not raw string equality (Notion normalizes `Z` to `+00:00`).
 
 ## If `apply` fails partway

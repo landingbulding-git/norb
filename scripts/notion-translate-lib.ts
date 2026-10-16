@@ -4,7 +4,7 @@ import 'dotenv/config';
 
 export const NOTION_API_KEY = process.env.NOTION_API_KEY;
 export const DATABASE_ID = process.env.NOTION_DATABASE_ID;
-const NOTION_VERSION = '2022-06-28';
+export const NOTION_VERSION = '2022-06-28';
 
 export const LANG_NAMES: Record<string, string> = { en: 'English', hu: 'Hungarian' };
 export const OTHER_LANG: Record<string, string> = { en: 'hu', hu: 'en' };
@@ -110,9 +110,41 @@ export function buildTranslatedRichText(originalRichText: any[], translatedText:
 }
 
 // A Notion image block whose original source is an internal upload (not an
-// external URL) carries a short-lived signed URL we can't recreate from.
+// external URL) carries a short-lived signed URL we can't recreate from -
+// unless we re-download and re-upload the bytes via reuploadImage() below.
 export function isUnsupportedBlock(block: any): boolean {
   return block.type === 'image' && block.image?.type === 'file';
+}
+
+// Downloads an internal image from its (still-fresh, short-lived) signed URL
+// and re-uploads it to Notion's File Upload API, returning a file_upload id
+// that can be attached to a new image block - even much later, since the
+// upload itself doesn't expire the way the source signed URL does.
+export async function reuploadImage(sourceUrl: string, filename: string): Promise<string | null> {
+  try {
+    const imgRes = await fetch(sourceUrl);
+    if (!imgRes.ok) return null;
+    const contentType = imgRes.headers.get('content-type') || 'image/png';
+    const bytes = await imgRes.arrayBuffer();
+
+    const upload = await notion('/file_uploads', { method: 'POST', body: JSON.stringify({}) });
+
+    const form = new FormData();
+    form.append('file', new Blob([bytes], { type: contentType }), filename);
+    const sendRes = await fetch(`https://api.notion.com/v1/file_uploads/${upload.id}/send`, {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${NOTION_API_KEY}`,
+        'Notion-Version': NOTION_VERSION,
+      },
+      body: form,
+    });
+    if (!sendRes.ok) return null;
+    return upload.id;
+  } catch (error) {
+    console.error('Failed to re-upload image:', error);
+    return null;
+  }
 }
 
 export async function appendChildrenChunked(pageId: string, blocks: any[]) {

@@ -49,6 +49,7 @@ async function applyOne(file: string) {
   if (item.stage) properties.stage = { select: { name: item.stage } };
   if (item.status) properties.status = { select: { name: item.status } };
   if (item.cover) properties.cover = { url: item.cover };
+  if (item.category?.length) properties.category = { multi_select: item.category.map((name: string) => ({ name })) };
 
   if (item.existingTranslationPageId) {
     await notion(`/pages/${item.existingTranslationPageId}`, { method: 'PATCH', body: JSON.stringify({ properties }) });

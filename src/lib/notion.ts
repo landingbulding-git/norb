@@ -27,17 +27,36 @@ export async function fetchLiveArticles(lang: string): Promise<Article[]> {
     const data = await response.json();
     if (!data.results) return [];
 
-    const articles: Article[] = data.results.map((page: any) => {
+    const articles: Article[] = await Promise.all(data.results.map(async (page: any) => {
       const titleProp = Object.values(page.properties).find((p: any) => p.type === 'title') as any;
+      let created = page.properties.created?.created_time || page.created_time;
+
+      // Notion's "created" field is auto-set and can't be overwritten, so a
+      // translation always gets its own (later) created time. Use the
+      // original post's created time instead, so translations sort/display
+      // alongside their original rather than at the top as "new".
+      const originalId = page.properties.translationOf?.relation?.[0]?.id;
+      if (originalId) {
+        try {
+          const originalRes = await fetch(`https://api.notion.com/v1/pages/${originalId}`, {
+            headers: { 'Authorization': `Bearer ${NOTION_API_KEY}`, 'Notion-Version': '2022-06-28' }
+          });
+          const originalPage = await originalRes.json();
+          created = originalPage.properties?.created?.created_time || originalPage.created_time || created;
+        } catch {
+          // fall back to the translation's own created time
+        }
+      }
+
       return {
         id: page.id,
         title: titleProp?.title?.[0]?.plain_text || 'Untitled',
         status: page.properties.status?.select?.name || 'in hold',
         cover: page.properties.cover?.url || null,
-        created: page.properties.created?.created_time || page.created_time,
+        created,
         categories: (page.properties.category?.multi_select || []).map((c: any) => c.name),
       };
-    });
+    }));
 
     return articles.sort((a, b) => new Date(b.created).getTime() - new Date(a.created).getTime());
   } catch (error) {

@@ -78,6 +78,7 @@ async function main() {
       stage: original.properties.stage?.select?.name ?? null,
       status: original.properties.status?.select?.name ?? null,
       cover: original.properties.cover?.url ?? null,
+      category: (original.properties.category?.multi_select || []).map((c: any) => c.name),
       blocks,
       blockTexts,
       blockTranslations: null,

@@ -10,7 +10,7 @@ export const LANG_NAMES: Record<string, string> = { en: 'English', hu: 'Hungaria
 export const OTHER_LANG: Record<string, string> = { en: 'hu', hu: 'en' };
 export const TRANSLATABLE_BLOCK_TYPES = [
   'paragraph', 'heading_1', 'heading_2', 'heading_3',
-  'bulleted_list_item', 'numbered_list_item', 'quote',
+  'bulleted_list_item', 'numbered_list_item', 'quote', 'callout',
 ];
 
 // Notion normalizes a stored date property to "+00:00" even when the

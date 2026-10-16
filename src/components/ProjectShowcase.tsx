@@ -1,11 +1,14 @@
 import { Article } from '../types.ts';
 import { Flame, Compass, Sparkles, Plus, ExternalLink, Pin, Circle, CheckCircle, PauseCircle } from 'lucide-react';
+import { t } from '../i18n/ui.ts';
 
 interface ProjectShowcaseProps {
   articles: Article[];
+  lang: string;
+  articleBasePath: string;
 }
 
-export default function ProjectShowcase({ articles }: ProjectShowcaseProps) {
+export default function ProjectShowcase({ articles, lang, articleBasePath }: ProjectShowcaseProps) {
   const getStatusIcon = (status: string) => {
     switch (status) {
       case 'pinned':
@@ -41,7 +44,7 @@ export default function ProjectShowcase({ articles }: ProjectShowcaseProps) {
       <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-3 border-b border-zinc-800 pb-4">
         <div>
           <h2 className="text-xl sm:text-2xl font-display font-semibold text-zinc-100">
-            things I'm hacking on...
+            {t(lang, 'work.heading')}
           </h2>
         </div>
       </div>
@@ -50,7 +53,7 @@ export default function ProjectShowcase({ articles }: ProjectShowcaseProps) {
         {articles.map((article) => (
           <a
             key={article.id}
-            href={`/article/${article.id}`}
+            href={`${articleBasePath}/${article.id}`}
             className="group relative bg-zinc-950 border border-zinc-900 rounded-xl overflow-hidden hover:border-orange-600/30 transition-all duration-300 md:hover:-translate-y-1 hover:shadow-2xl hover:shadow-orange-900/5 flex flex-col cursor-pointer block"
           >
             {/* Image Cover */}
@@ -90,7 +93,7 @@ export default function ProjectShowcase({ articles }: ProjectShowcaseProps) {
               <div className="mt-4 pt-3 border-t border-zinc-900/60 flex justify-between items-center text-zinc-600 text-[10px] font-mono">
                 <span>{new Date(article.created).toLocaleDateString()}</span>
                 <span className="opacity-0 group-hover:opacity-100 transition-opacity flex items-center gap-1 text-orange-500">
-                  Read <ExternalLink className="w-3 h-3" />
+                  {t(lang, 'work.read')} <ExternalLink className="w-3 h-3" />
                 </span>
               </div>
             </div>
@@ -98,7 +101,7 @@ export default function ProjectShowcase({ articles }: ProjectShowcaseProps) {
         ))}
         {articles.length === 0 && (
           <div className="col-span-full py-10 text-center text-zinc-500 text-sm font-mono border border-dashed border-zinc-800 rounded-xl">
-            No projects in the kitchen yet.
+            {t(lang, 'work.empty')}
           </div>
         )}
       </div>

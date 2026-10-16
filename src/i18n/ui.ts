@@ -1,0 +1,83 @@
+export const defaultLang = 'en';
+export const languages = { en: 'EN', hu: 'HU' } as const;
+export type Lang = keyof typeof languages;
+
+export const ui = {
+  en: {
+    'hero.subtitle': "I build things. See what's cooking and please say hi if something clicks.",
+    'hero.badge.collab': 'open to collab',
+    'hero.badge.noPressure': 'no pressure',
+    'hero.badge.winners': 'I love winners',
+    'work.heading': "things I'm hacking on...",
+    'work.empty': 'No projects in the kitchen yet.',
+    'work.read': 'Read',
+    'info.heading': 'Want to partner up on something ambitious?',
+    'info.body': "Let's create something high-performance, beautiful, and completely user-centric.",
+    'info.cta': 'Consulting Desk',
+    'footer.rights': 'All rights reserved.',
+    'footer.builtWith': 'Built with Astro + React + Tailwind CSS',
+    'article.back': 'Back to Home',
+    'article.publishedOn': 'Published on',
+    'form.placeholder': 'Drop a note about an idea, project, or just say hi...',
+    'form.availableForWork': 'Available for work',
+    'form.continue': 'Continue',
+    'form.step2': 'Step 2 of 2',
+    'form.replyPrompt': 'Tell me where to reply',
+    'form.back': '← Back',
+    'form.firstName': 'First Name',
+    'form.email': 'Email Address',
+    'form.submit': 'Submit message',
+    'form.sending': 'Sending...',
+    'form.success.title': 'Successfully cooked!',
+    'form.success.thanksPrefix': 'Thanks,',
+    'form.success.thanks': "I'll read this over coffee and get back to you soon.",
+    'form.success.again': 'Send another message',
+    'form.error.noMessage': 'Please leave a short message before sending.',
+    'form.error.noFirstName': 'Please enter your first name.',
+    'form.error.badEmail': 'Please enter a valid email address.',
+    'form.error.generic': 'Something went wrong. Please try again.',
+    'form.error.network': 'Network error. Please try again later.',
+  },
+  hu: {
+    'hero.subtitle': 'Dolgokat építek. Nézd meg, mi készül, és nyugodtan köszönj, ha megtetszik valami.',
+    'hero.badge.collab': 'nyitott vagyok közös munkára',
+    'hero.badge.noPressure': 'semmi nyomás',
+    'hero.badge.winners': 'szeretem a győzteseket',
+    'work.heading': 'amin éppen dolgozom...',
+    'work.empty': 'Még nincs projekt a konyhában.',
+    'work.read': 'Elolvasom',
+    'info.heading': 'Belevágnál velem valami nagyra törő projektbe?',
+    'info.body': 'Építsünk valami gyors, szép és teljesen felhasználóközpontú dolgot.',
+    'info.cta': 'Konzultáció',
+    'footer.rights': 'Minden jog fenntartva.',
+    'footer.builtWith': 'Astro + React + Tailwind CSS segítségével készült',
+    'article.back': 'Vissza a főoldalra',
+    'article.publishedOn': 'Megjelent:',
+    'form.placeholder': 'Írj pár sort egy ötletről, projektről, vagy csak köszönj...',
+    'form.availableForWork': 'Elérhető munkára',
+    'form.continue': 'Tovább',
+    'form.step2': '2/2. lépés',
+    'form.replyPrompt': 'Hova válaszoljak?',
+    'form.back': '← Vissza',
+    'form.firstName': 'Keresztnév',
+    'form.email': 'E-mail cím',
+    'form.submit': 'Üzenet küldése',
+    'form.sending': 'Küldés...',
+    'form.success.title': 'Sikeresen megfőtt!',
+    'form.success.thanksPrefix': 'Köszi,',
+    'form.success.thanks': 'Egy kávé mellett elolvasom, és hamarosan jelentkezem.',
+    'form.success.again': 'Új üzenet küldése',
+    'form.error.noMessage': 'Kérlek, írj egy rövid üzenetet küldés előtt.',
+    'form.error.noFirstName': 'Kérlek, add meg a keresztneved.',
+    'form.error.badEmail': 'Kérlek, adj meg egy érvényes e-mail címet.',
+    'form.error.generic': 'Hiba történt. Kérlek, próbáld újra.',
+    'form.error.network': 'Hálózati hiba. Kérlek, próbáld újra később.',
+  },
+} as const;
+
+export type UiKey = keyof typeof ui.en;
+
+export function t(lang: string, key: UiKey): string {
+  const dict = lang === 'hu' ? ui.hu : ui.en;
+  return dict[key] ?? ui.en[key];
+}

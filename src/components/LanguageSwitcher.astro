@@ -1,0 +1,27 @@
+---
+import { languages } from '@/src/i18n/ui';
+
+const lang = Astro.currentLocale ?? 'en';
+const path = Astro.url.pathname;
+
+// Strip an existing /hu prefix to get the path in the default (en) locale
+const unprefixedPath = path.replace(/^\/hu(\/|$)/, '/');
+const enHref = unprefixedPath || '/';
+const huHref = '/hu' + (unprefixedPath === '/' ? '' : unprefixedPath);
+---
+
+<div class="flex items-center gap-1 font-mono text-xs">
+  <a
+    href={enHref}
+    class={`px-1.5 py-0.5 rounded transition-colors ${lang === 'en' ? 'text-white' : 'text-zinc-600 hover:text-zinc-300'}`}
+  >
+    {languages.en}
+  </a>
+  <span class="text-zinc-700">/</span>
+  <a
+    href={huHref}
+    class={`px-1.5 py-0.5 rounded transition-colors ${lang === 'hu' ? 'text-white' : 'text-zinc-600 hover:text-zinc-300'}`}
+  >
+    {languages.hu}
+  </a>
+</div>

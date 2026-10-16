@@ -1,0 +1,101 @@
+---
+import Layout from '@/src/layouts/Layout.astro';
+import { ArrowLeft } from 'lucide-react';
+import CodeBlock from '@/src/components/CodeBlock';
+import { t } from '@/src/i18n/ui';
+
+interface Props {
+  title: string;
+  coverUrl: string | null;
+  created: string;
+  blocks: any[];
+  homeHref: string;
+}
+
+const { title, coverUrl, created, blocks, homeHref } = Astro.props;
+const lang = Astro.currentLocale ?? 'en';
+
+function renderRichText(richTextArray: any[]) {
+  if (!richTextArray) return '';
+  return richTextArray.map(rt => {
+    let text = rt.plain_text;
+    if (rt.annotations.bold) text = `<strong>${text}</strong>`;
+    if (rt.annotations.italic) text = `<em>${text}</em>`;
+    if (rt.annotations.strikethrough) text = `<del>${text}</del>`;
+    if (rt.annotations.underline) text = `<u>${text}</u>`;
+    if (rt.annotations.code) text = `<code class="bg-zinc-800 text-orange-400 px-1 py-0.5 rounded text-sm">${text}</code>`;
+    if (rt.href) text = `<a href="${rt.href}" target="_blank" rel="noopener noreferrer" class="text-orange-500 hover:underline">${text}</a>`;
+    return text;
+  }).join('');
+}
+---
+
+<Layout title={`${title} | Norb.dev`}>
+  <main class="max-w-3xl mx-auto px-6 py-12 md:py-20 relative z-10">
+    <a href={homeHref} class="inline-flex items-center gap-2 text-zinc-500 hover:text-orange-500 transition-colors mb-8 font-mono text-sm">
+      <ArrowLeft class="w-4 h-4" />
+      {t(lang, 'article.back')}
+    </a>
+
+    <article class="space-y-8">
+      {coverUrl && (
+        <div class="w-full h-64 md:h-96 rounded-2xl overflow-hidden border border-zinc-800 shadow-2xl">
+          <img
+            src={coverUrl}
+            alt={title}
+            loading="eager"
+            fetchpriority="high"
+            decoding="async"
+            class="w-full h-full object-cover"
+          />
+        </div>
+      )}
+
+      <div class="space-y-4">
+        <h1 class="text-3xl md:text-5xl font-display font-bold text-zinc-100 leading-tight">
+          {title}
+        </h1>
+        <div class="text-zinc-500 font-mono text-sm">
+          {t(lang, 'article.publishedOn')} {new Date(created).toLocaleDateString()}
+        </div>
+      </div>
+
+      <div class="prose prose-invert prose-orange max-w-none mt-10 space-y-6 text-zinc-300 leading-relaxed">
+        {blocks.map(block => {
+          if (block.type === 'paragraph') {
+            return <p set:html={renderRichText(block.paragraph.rich_text)} />;
+          }
+          if (block.type === 'heading_1') {
+            return <h1 class="text-2xl font-bold text-zinc-100 mt-10 mb-4" set:html={renderRichText(block.heading_1.rich_text)} />;
+          }
+          if (block.type === 'heading_2') {
+            return <h2 class="text-xl font-bold text-zinc-100 mt-8 mb-3" set:html={renderRichText(block.heading_2.rich_text)} />;
+          }
+          if (block.type === 'heading_3') {
+            return <h3 class="text-lg font-bold text-zinc-100 mt-6 mb-2" set:html={renderRichText(block.heading_3.rich_text)} />;
+          }
+          if (block.type === 'bulleted_list_item') {
+            return <li class="ml-4 list-disc marker:text-orange-500" set:html={renderRichText(block.bulleted_list_item.rich_text)} />;
+          }
+          if (block.type === 'numbered_list_item') {
+            return <li class="ml-4 list-decimal marker:text-zinc-500" set:html={renderRichText(block.numbered_list_item.rich_text)} />;
+          }
+          if (block.type === 'quote') {
+            return <blockquote class="border-l-4 border-orange-500 pl-4 italic text-zinc-400 my-6" set:html={renderRichText(block.quote.rich_text)} />;
+          }
+          if (block.type === 'code') {
+            return (
+              <CodeBlock client:visible code={block.code.rich_text[0]?.plain_text || ''} />
+            );
+          }
+          if (block.type === 'image') {
+            const imageUrl = block.image.type === 'external' ? block.image.external.url : block.image.file.url;
+            return <img src={imageUrl} alt="Article image" loading="lazy" decoding="async" class="rounded-xl border border-zinc-800 my-8 w-full shadow-lg" />;
+          }
+          // Fallback or ignored block types
+          return null;
+        })}
+      </div>
+    </article>
+  </main>
+</Layout>

@@ -2,8 +2,13 @@ import { useState, FormEvent } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { Send, User, Mail, ArrowRight, CheckCircle2, RotateCcw, Loader2 } from 'lucide-react';
 import { UserMessage } from '../types.ts';
+import { t } from '../i18n/ui.ts';
 
-export default function MessageForm() {
+interface MessageFormProps {
+  lang: string;
+}
+
+export default function MessageForm({ lang }: MessageFormProps) {
   const [step, setStep] = useState<'message' | 'details' | 'success'>('message');
   const [messageText, setMessageText] = useState('');
   const [firstName, setFirstName] = useState('');
@@ -14,7 +19,7 @@ export default function MessageForm() {
   const handleMessageSubmit = (e: FormEvent) => {
     e.preventDefault();
     if (!messageText.trim()) {
-      setErrorStatus('Please leave a short message before sending.');
+      setErrorStatus(t(lang, 'form.error.noMessage'));
       return;
     }
     setErrorStatus(null);
@@ -24,11 +29,11 @@ export default function MessageForm() {
   const handleDetailsSubmit = async (e: FormEvent) => {
     e.preventDefault();
     if (!firstName.trim()) {
-      setErrorStatus('Please enter your first name.');
+      setErrorStatus(t(lang, 'form.error.noFirstName'));
       return;
     }
     if (!email.trim() || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-      setErrorStatus('Please enter a valid email address.');
+      setErrorStatus(t(lang, 'form.error.badEmail'));
       return;
     }
 
@@ -67,10 +72,10 @@ export default function MessageForm() {
 
         setStep('success');
       } else {
-        setErrorStatus(result.message || 'Something went wrong. Please try again.');
+        setErrorStatus(result.message || t(lang, 'form.error.generic'));
       }
     } catch (error) {
-      setErrorStatus('Network error. Please try again later.');
+      setErrorStatus(t(lang, 'form.error.network'));
     } finally {
       setIsSubmitting(false);
     }
@@ -100,7 +105,7 @@ export default function MessageForm() {
                 <textarea
                   id="message-input"
                   rows={1}
-                  placeholder="Drop a note about an idea, project, or just say hi..."
+                  placeholder={t(lang, 'form.placeholder')}
                   value={messageText}
                   onChange={(e) => {
                     setMessageText(e.target.value);
@@ -118,14 +123,14 @@ export default function MessageForm() {
                 <div className="w-full flex justify-between items-center px-2 py-1.5 border-t border-zinc-900/50 mt-1">
                   <div className="flex items-center gap-1.5 px-2">
                     <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
-                    <span className="text-[10px] font-mono text-zinc-500 uppercase tracking-wider">Available for work</span>
+                    <span className="text-[10px] font-mono text-zinc-500 uppercase tracking-wider">{t(lang, 'form.availableForWork')}</span>
                   </div>
                   <button
                     id="message-send-btn"
                     type="submit"
                     className="flex items-center gap-2 bg-zinc-100 hover:bg-white active:scale-[0.98] text-zinc-950 px-4 py-2 rounded-xl transition-all font-medium text-xs md:text-sm group/btn shadow-lg"
                   >
-                    <span>Continue</span>
+                    <span>{t(lang, 'form.continue')}</span>
                     <ArrowRight className="w-3.5 h-3.5 group-hover/btn:translate-x-0.5 transition-transform" />
                   </button>
                 </div>
@@ -150,9 +155,9 @@ export default function MessageForm() {
           >
             <div className="flex justify-between items-start">
               <div>
-                <p className="text-[10px] uppercase tracking-wider text-orange-500 font-mono font-medium">Step 2 of 2</p>
+                <p className="text-[10px] uppercase tracking-wider text-orange-500 font-mono font-medium">{t(lang, 'form.step2')}</p>
                 <h3 className="text-base md:text-lg font-display text-zinc-100 font-semibold mt-1">
-                  Tell me where to reply
+                  {t(lang, 'form.replyPrompt')}
                 </h3>
               </div>
               <button
@@ -160,7 +165,7 @@ export default function MessageForm() {
                 onClick={() => setStep('message')}
                 className="text-zinc-500 hover:text-zinc-300 text-xs font-mono"
               >
-                ← Back
+                {t(lang, 'form.back')}
               </button>
             </div>
 
@@ -168,7 +173,7 @@ export default function MessageForm() {
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div className="space-y-1">
                   <label htmlFor="first-name-input" className="text-xs font-medium text-zinc-400 block pl-1">
-                    First Name
+                    {t(lang, 'form.firstName')}
                   </label>
                   <div className="relative">
                     <User className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-500" />
@@ -185,7 +190,7 @@ export default function MessageForm() {
 
                 <div className="space-y-1">
                   <label htmlFor="email-input" className="text-xs font-medium text-zinc-400 block pl-1">
-                    Email Address
+                    {t(lang, 'form.email')}
                   </label>
                   <div className="relative">
                     <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-500" />
@@ -216,11 +221,11 @@ export default function MessageForm() {
                 {isSubmitting ? (
                   <>
                     <Loader2 className="w-4 h-4 animate-spin" />
-                    <span>Sending...</span>
+                    <span>{t(lang, 'form.sending')}</span>
                   </>
                 ) : (
                   <>
-                    <span>Submit message</span>
+                    <span>{t(lang, 'form.submit')}</span>
                     <ArrowRight className="w-4 h-4" />
                   </>
                 )}
@@ -245,9 +250,9 @@ export default function MessageForm() {
               </div>
             </div>
             <div className="space-y-1">
-              <h3 className="text-lg font-display text-zinc-100 font-bold">Successfully cooked!</h3>
+              <h3 className="text-lg font-display text-zinc-100 font-bold">{t(lang, 'form.success.title')}</h3>
               <p className="text-sm text-zinc-400">
-                Thanks, <span className="text-orange-500 font-semibold">{firstName}</span>. I'll read this over coffee and get back to you soon.
+                {t(lang, 'form.success.thanksPrefix')} <span className="text-orange-500 font-semibold">{firstName}</span>. {t(lang, 'form.success.thanks')}
               </p>
             </div>
             <button
@@ -255,7 +260,7 @@ export default function MessageForm() {
               className="inline-flex items-center gap-1.5 text-xs text-zinc-500 hover:text-orange-500 font-mono transition-all py-1 px-3 rounded-md hover:bg-zinc-950/40"
             >
               <RotateCcw className="w-3" />
-              <span>Send another message</span>
+              <span>{t(lang, 'form.success.again')}</span>
             </button>
           </motion.div>
         )}

@@ -2,6 +2,8 @@
 import '@/src/index.css';
 import { Github, Twitter, Linkedin, Mail } from 'lucide-react';
 import { socialLinks } from '@/src/data';
+import { t } from '@/src/i18n/ui';
+import LanguageSwitcher from '@/src/components/LanguageSwitcher.astro';
 
 interface Props {
 	title: string;
@@ -9,16 +11,17 @@ interface Props {
 	image?: string;
 }
 
-const { 
-	title, 
+const {
+	title,
 	description = "Norbert's personal site - clean, minimal, modern, and interactive.",
-	image = "https://norb.me/me-landing-image.webp" 
+	image = "https://norb.me/me-landing-image.webp"
 } = Astro.props;
 const currentYear = new Date().getFullYear();
+const lang = Astro.currentLocale ?? 'en';
 ---
 
 <!doctype html>
-<html lang="en">
+<html lang={lang}>
 	<head>
 		<meta charset="UTF-8" />
 		<meta name="viewport" content="width=device-width" />
@@ -78,6 +81,7 @@ const currentYear = new Date().getFullYear();
             Norb
           </span>
         </div>
+        <LanguageSwitcher />
       </header>
 
       <slot />
@@ -85,8 +89,8 @@ const currentYear = new Date().getFullYear();
       <!-- FOOTER -->
       <footer id="site-footer" class="max-w-4xl mx-auto px-6 py-12 border-t border-zinc-900/60 mt-16 flex flex-col sm:flex-row justify-between items-center gap-4 text-zinc-500 text-xs relative z-10">
         <div>
-          <p>© {currentYear} Norbert B. All rights reserved.</p>
-          <p class="text-zinc-700 mt-1 font-mono text-[10px]">Built with Astro + React + Tailwind CSS</p>
+          <p>© {currentYear} Norbert B. {t(lang, 'footer.rights')}</p>
+          <p class="text-zinc-700 mt-1 font-mono text-[10px]">{t(lang, 'footer.builtWith')}</p>
         </div>
 
         <div class="flex items-center gap-4">

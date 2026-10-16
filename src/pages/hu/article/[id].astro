@@ -1,0 +1,19 @@
+---
+import ArticleView from '@/src/components/ArticleView.astro';
+import { fetchLiveArticles, fetchArticleBlocks } from '@/src/lib/notion';
+
+export async function getStaticPaths() {
+  const articles = await fetchLiveArticles();
+
+  return articles.map((article) => ({
+    params: { id: article.id },
+    props: { title: article.title, coverUrl: article.cover, created: article.created }
+  }));
+}
+
+const { id } = Astro.params;
+const { title, coverUrl, created } = Astro.props;
+const blocks = await fetchArticleBlocks(id as string);
+---
+
+<ArticleView title={title} coverUrl={coverUrl} created={created} blocks={blocks} homeHref="/hu" />

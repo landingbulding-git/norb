@@ -10,11 +10,11 @@
     "clean": "rm -rf dist server.js .astro",
     "lint": "tsc --noEmit",
     "setup:notion": "tsx scripts/setup-notion-schema.ts",
-    "translate:blog": "tsx scripts/translate-blog.ts"
+    "translate:prepare": "tsx scripts/notion-translate-prepare.ts",
+    "translate:apply": "tsx scripts/notion-translate-apply.ts"
   },
   "dependencies": {
     "@astrojs/react": "^5.0.5",
-    "@google/genai": "^1.29.0",
     "@tailwindcss/vite": "^4.1.14",
     "@vitejs/plugin-react": "^5.0.4",
     "astro": "^6.3.6",

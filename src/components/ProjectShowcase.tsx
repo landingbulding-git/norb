@@ -3,7 +3,7 @@ import { Article } from '../types.ts';
 import { Flame, Compass, Sparkles, Plus, ExternalLink, Pin, Circle, CheckCircle, PauseCircle } from 'lucide-react';
 import { t } from '../i18n/ui.ts';
 
-const FILTERS = ['Ophelia', 'Personal', 'Ideas'];
+const FILTERS = ['Ophelia', 'Personal', 'Ideas', 'Side hustle'];
 
 interface ProjectShowcaseProps {
   articles: Article[];

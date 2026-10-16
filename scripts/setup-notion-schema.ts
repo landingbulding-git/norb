@@ -47,16 +47,22 @@ async function main() {
   if (!existing.translationOf) {
     toAdd.translationOf = { relation: { database_id: DATABASE_ID, single_property: {} } };
   }
+  const categoryOptions = [
+    { name: 'Ophelia', color: 'pink' },
+    { name: 'Personal', color: 'yellow' },
+    { name: 'Ideas', color: 'purple' },
+    { name: 'Side hustle', color: 'orange' },
+  ];
   if (!existing.category) {
-    toAdd.category = {
-      multi_select: {
-        options: [
-          { name: 'Ophelia', color: 'pink' },
-          { name: 'Personal', color: 'yellow' },
-          { name: 'Ideas', color: 'purple' },
-        ],
-      },
-    };
+    toAdd.category = { multi_select: { options: categoryOptions } };
+  } else {
+    const existingNames = new Set(existing.category.multi_select.options.map((o: any) => o.name));
+    const missing = categoryOptions.filter((o) => !existingNames.has(o.name));
+    if (missing.length > 0) {
+      toAdd.category = {
+        multi_select: { options: [...existing.category.multi_select.options, ...missing] },
+      };
+    }
   }
 
   if (Object.keys(toAdd).length === 0) {

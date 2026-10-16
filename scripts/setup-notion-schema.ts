@@ -47,6 +47,17 @@ async function main() {
   if (!existing.translationOf) {
     toAdd.translationOf = { relation: { database_id: DATABASE_ID, single_property: {} } };
   }
+  if (!existing.category) {
+    toAdd.category = {
+      multi_select: {
+        options: [
+          { name: 'Ophelia', color: 'pink' },
+          { name: 'Personal', color: 'yellow' },
+          { name: 'Ideas', color: 'purple' },
+        ],
+      },
+    };
+  }
 
   if (Object.keys(toAdd).length === 0) {
     console.log('Notion database already has all required properties.');

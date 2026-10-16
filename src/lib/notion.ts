@@ -42,6 +42,7 @@ export async function fetchLiveArticles(lang: string): Promise<Article[]> {
         status: page.properties.status?.select?.name || 'in hold',
         cover: page.properties.cover?.url || null,
         created: page.properties.created?.created_time || page.created_time,
+        categories: (page.properties.category?.multi_select || []).map((c: any) => c.name),
       };
     });
 

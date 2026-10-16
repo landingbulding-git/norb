@@ -1,7 +1,6 @@
 ---
 import Layout from '@/src/layouts/Layout.astro';
 import MessageForm from '@/src/components/MessageForm';
-import LogoMarquee from '@/src/components/LogoMarquee';
 import ProjectShowcase from '@/src/components/ProjectShowcase';
 import { ArrowUpRight } from 'lucide-react';
 import { socialLinks } from '@/src/data';
@@ -81,7 +80,6 @@ const articles = await fetchLiveArticles(lang);
         <MessageForm client:visible lang={lang} />
       </div>
 
-      <LogoMarquee client:visible />
     </section>
 
     <!-- WORK / CURRENT POT STUFF -->

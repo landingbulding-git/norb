@@ -15,6 +15,7 @@ export interface Article {
   status: 'pinned' | 'ongoing' | 'ended' | 'in hold';
   cover: string | null;
   created: string;
+  categories: string[];
 }
 
 export interface UserMessage {

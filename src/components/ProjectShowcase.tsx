@@ -1,6 +1,9 @@
+import { useState } from 'react';
 import { Article } from '../types.ts';
 import { Flame, Compass, Sparkles, Plus, ExternalLink, Pin, Circle, CheckCircle, PauseCircle } from 'lucide-react';
 import { t } from '../i18n/ui.ts';
+
+const FILTERS = ['Ophelia', 'Personal', 'Ideas'];
 
 interface ProjectShowcaseProps {
   articles: Article[];
@@ -9,6 +12,11 @@ interface ProjectShowcaseProps {
 }
 
 export default function ProjectShowcase({ articles, lang, articleBasePath }: ProjectShowcaseProps) {
+  const [activeFilter, setActiveFilter] = useState<string | null>(null);
+  const visibleArticles = activeFilter
+    ? articles.filter((article) => article.categories.includes(activeFilter))
+    : articles;
+
   const getStatusIcon = (status: string) => {
     switch (status) {
       case 'pinned':
@@ -47,10 +55,35 @@ export default function ProjectShowcase({ articles, lang, articleBasePath }: Pro
             {t(lang, 'work.heading')}
           </h2>
         </div>
+        <div className="flex gap-2">
+          <button
+            onClick={() => setActiveFilter(null)}
+            className={`px-3 py-1 rounded-full text-xs font-mono transition-colors ${
+              activeFilter === null
+                ? 'bg-orange-500/10 text-orange-400 border border-orange-500/20'
+                : 'bg-zinc-900 text-zinc-500 border border-zinc-800 hover:text-zinc-300'
+            }`}
+          >
+            All
+          </button>
+          {FILTERS.map((filter) => (
+            <button
+              key={filter}
+              onClick={() => setActiveFilter(filter === activeFilter ? null : filter)}
+              className={`px-3 py-1 rounded-full text-xs font-mono transition-colors ${
+                activeFilter === filter
+                  ? 'bg-orange-500/10 text-orange-400 border border-orange-500/20'
+                  : 'bg-zinc-900 text-zinc-500 border border-zinc-800 hover:text-zinc-300'
+              }`}
+            >
+              {filter}
+            </button>
+          ))}
+        </div>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
-        {articles.map((article) => (
+        {visibleArticles.map((article) => (
           <a
             key={article.id}
             href={`${articleBasePath}/${article.id}`}
@@ -99,7 +132,7 @@ export default function ProjectShowcase({ articles, lang, articleBasePath }: Pro
             </div>
           </a>
         ))}
-        {articles.length === 0 && (
+        {visibleArticles.length === 0 && (
           <div className="col-span-full py-10 text-center text-zinc-500 text-sm font-mono border border-dashed border-zinc-800 rounded-xl">
             {t(lang, 'work.empty')}
           </div>

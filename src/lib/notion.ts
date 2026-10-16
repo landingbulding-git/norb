@@ -3,13 +3,6 @@ import type { Article } from '@/src/types';
 const NOTION_API_KEY = import.meta.env.NOTION_API_KEY || process.env.NOTION_API_KEY;
 const DATABASE_ID = import.meta.env.NOTION_DATABASE_ID || process.env.NOTION_DATABASE_ID;
 
-const statusOrder: Record<string, number> = {
-  pinned: 1,
-  ongoing: 2,
-  ended: 3,
-  'in hold': 4,
-};
-
 export async function fetchLiveArticles(lang: string): Promise<Article[]> {
   if (!NOTION_API_KEY || !DATABASE_ID) return [];
 
@@ -46,14 +39,7 @@ export async function fetchLiveArticles(lang: string): Promise<Article[]> {
       };
     });
 
-    return articles.sort((a, b) => {
-      const orderA = statusOrder[a.status] ?? 99;
-      const orderB = statusOrder[b.status] ?? 99;
-      if (orderA === orderB) {
-        return new Date(b.created).getTime() - new Date(a.created).getTime();
-      }
-      return orderA - orderB;
-    });
+    return articles.sort((a, b) => new Date(b.created).getTime() - new Date(a.created).getTime());
   } catch (error) {
     console.error('Failed to fetch from Notion:', error);
     return [];

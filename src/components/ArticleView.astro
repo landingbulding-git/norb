@@ -83,6 +83,16 @@ function renderRichText(richTextArray: any[]) {
           if (block.type === 'quote') {
             return <blockquote class="border-l-4 border-orange-500 pl-4 italic text-zinc-400 my-6" set:html={renderRichText(block.quote.rich_text)} />;
           }
+          if (block.type === 'callout') {
+            const icon = block.callout.icon;
+            const emoji = icon?.type === 'emoji' ? icon.emoji : null;
+            return (
+              <div class="flex gap-3 rounded-xl border border-zinc-800 bg-zinc-900/60 px-4 py-4 my-6">
+                {emoji && <span class="text-xl leading-none">{emoji}</span>}
+                <div set:html={renderRichText(block.callout.rich_text)} />
+              </div>
+            );
+          }
           if (block.type === 'code') {
             return (
               <CodeBlock client:visible code={block.code.rich_text[0]?.plain_text || ''} />

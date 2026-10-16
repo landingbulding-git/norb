@@ -3,8 +3,8 @@
 // Run with: npm run translate:apply
 import { readdirSync, readFileSync, unlinkSync } from 'node:fs';
 import {
-  requireEnv, notion, DATABASE_ID, buildTranslatedRichText,
-  appendChildrenChunked, archiveAllChildren,
+  requireEnv, notion, DATABASE_ID, buildTranslatedRichText, splitLongRichText,
+  isUnsupportedBlock, appendChildrenChunked, archiveAllChildren,
 } from './notion-translate-lib.ts';
 
 requireEnv();
@@ -23,13 +23,21 @@ async function applyOne(file: string) {
     return;
   }
 
-  const translatedBlocks = item.blocks.map((entry: any) => {
-    if (entry.translatableIndex === null) return entry.block;
-    const block = entry.block;
-    const translated = item.blockTranslations[entry.translatableIndex];
-    block[block.type].rich_text = buildTranslatedRichText(block[block.type].rich_text, translated);
-    return block;
-  });
+  const translatedBlocks = item.blocks
+    .filter((entry: any) => !isUnsupportedBlock(entry.block))
+    .map((entry: any) => {
+      const block = entry.block;
+      if (block[block.type]?.icon === null) delete block[block.type].icon;
+      if (entry.translatableIndex === null) {
+        if (block[block.type]?.rich_text) {
+          block[block.type].rich_text = splitLongRichText(block[block.type].rich_text);
+        }
+        return block;
+      }
+      const translated = item.blockTranslations[entry.translatableIndex];
+      block[block.type].rich_text = buildTranslatedRichText(block[block.type].rich_text, translated);
+      return block;
+    });
 
   const properties: Record<string, any> = {
     [item.titleKey]: { title: [{ text: { content: item.translatedTitle } }] },

@@ -13,6 +13,13 @@ export const TRANSLATABLE_BLOCK_TYPES = [
   'bulleted_list_item', 'numbered_list_item', 'quote',
 ];
 
+// Notion normalizes a stored date property to "+00:00" even when the
+// original timestamp used "Z" - compare instants, not raw strings.
+export function sameInstant(a: string | null | undefined, b: string | null | undefined): boolean {
+  if (!a || !b) return false;
+  return new Date(a).getTime() === new Date(b).getTime();
+}
+
 export function requireEnv() {
   if (!NOTION_API_KEY || !DATABASE_ID) {
     console.error('Missing NOTION_API_KEY or NOTION_DATABASE_ID in the environment.');
@@ -63,17 +70,49 @@ export function blockPlainText(block: any): string {
 
 export function stripBlockForCreate(block: any) {
   // Notion only accepts { type, [type]: payload } when creating blocks -
-  // strip read-only fields like id/created_time/last_edited_time.
-  return { type: block.type, [block.type]: block[block.type] };
+  // strip read-only fields like id/created_time/last_edited_time. It also
+  // rejects a null "icon" on non-callout blocks, even though fetch returns one.
+  const payload = { ...block[block.type] };
+  if (payload.icon === null) delete payload.icon;
+  if (payload.rich_text) payload.rich_text = splitLongRichText(payload.rich_text);
+  return { type: block.type, [block.type]: payload };
+}
+
+const MAX_RICH_TEXT_LEN = 2000;
+
+function chunkText(text: string, maxLen = MAX_RICH_TEXT_LEN): string[] {
+  if (text.length <= maxLen) return [text];
+  const chunks: string[] = [];
+  for (let i = 0; i < text.length; i += maxLen) chunks.push(text.slice(i, i + maxLen));
+  return chunks;
+}
+
+// Notion rejects any rich_text run whose content exceeds 2000 chars -
+// split it into several runs with the same annotations/link instead.
+export function splitLongRichText(richText: any[]): any[] {
+  const result: any[] = [];
+  for (const run of richText) {
+    const content = run.text?.content ?? '';
+    for (const chunk of chunkText(content)) {
+      result.push({ ...run, text: { ...run.text, content: chunk }, plain_text: chunk });
+    }
+  }
+  return result;
 }
 
 export function buildTranslatedRichText(originalRichText: any[], translatedText: string) {
   const run = originalRichText[0];
-  return [{
+  return splitLongRichText([{
     type: 'text',
     text: { content: translatedText, link: run?.text?.link ?? null },
     annotations: run?.annotations,
-  }];
+  }]);
+}
+
+// A Notion image block whose original source is an internal upload (not an
+// external URL) carries a short-lived signed URL we can't recreate from.
+export function isUnsupportedBlock(block: any): boolean {
+  return block.type === 'image' && block.image?.type === 'file';
 }
 
 export async function appendChildrenChunked(pageId: string, blocks: any[]) {

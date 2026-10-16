@@ -4,7 +4,7 @@
 import { mkdirSync, writeFileSync } from 'node:fs';
 import {
   requireEnv, notion, DATABASE_ID, titlePropertyName, titleText,
-  fetchAllBlocks, blockPlainText, stripBlockForCreate,
+  fetchAllBlocks, blockPlainText, stripBlockForCreate, sameInstant,
   TRANSLATABLE_BLOCK_TYPES, LANG_NAMES, OTHER_LANG, findExistingTranslation,
 } from './notion-translate-lib.ts';
 
@@ -32,7 +32,7 @@ async function main() {
 
     const targetLang = OTHER_LANG[sourceLang];
     const existing = await findExistingTranslation(original.id, targetLang);
-    const isStale = !existing || existing.properties.sourceEditedTime?.date?.start !== original.last_edited_time;
+    const isStale = !existing || !sameInstant(existing.properties.sourceEditedTime?.date?.start, original.last_edited_time);
 
     if (!isStale) {
       console.log(`Up to date: "${titleText(original)}" -> ${targetLang}`);
